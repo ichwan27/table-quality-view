@@ -2,27 +2,32 @@ import { useRef, useLayoutEffect } from 'react';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import axios from 'axios';
+// import axios from 'axios';
+import chartData from '../chartData.json';
 
 am4core.useTheme(am4themes_animated);
-function XyChart (props) {
-    const chart = useRef(null);
-useLayoutEffect(() => {
-
-    let x = am4core.create("chartdiv", am4charts.XYChart);
+function last30Days(){
     const date = new Date();
     const year = date.getFullYear();
     const month = date.getMonth()+1;
     const lastMonth = ((month-1) >= 10 ? (month-1) : "0"+(month-1));
     const day = date.getDate();
-    const lastDate = year+"-"+lastMonth+"-"+day;
+    return year+"-"+lastMonth+"-"+day;
+}
+function XyChart (props) {
+    const chart = useRef(null);
+useLayoutEffect(() => {
+        let x = am4core.create("chartdiv", am4charts.XYChart);
     // console.log(date);
-    async function fetchData(){
-        const result = await axios('../chartData.json ');
-            // console.log(lastDate);
-            x.data = (result.data).filter(item => item.date > lastDate);
-        }
-        fetchData();
+    // async function fetchData(){
+    //     const result = await axios('../chartData.json ');
+    //         // console.log(lastDate);
+    //         x.data = (result.data).filter(item => item.date > lastDate);
+    //     }
+    //     fetchData();
+
+        const lastDate = last30Days();
+        x.data = chartData.filter(item => item.date > lastDate);
 
         x.paddingRight = 20;
 
