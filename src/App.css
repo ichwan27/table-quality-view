@@ -1,5 +1,10 @@
 @import '~antd/dist/antd.css';
 
+.clear{
+  text-align: left;
+  margin-bottom: 10px;
+  float: left;
+}
 .container{
   padding: 20px 20px 0px 20px;
   width:100%;
