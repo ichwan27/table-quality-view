@@ -83,9 +83,9 @@ function TableQuality() {
       setSearchedColumn(dataIndex);
   };
   const clearAll = () => {
-    setFilteredInfo(" ");
-    setSearchTexted(" ");
-    setSortingInfo(" ");
+    setFilteredInfo(' ');
+    setSearchTexted(' ');
+    setSortingInfo(' ');
   };
   const handleReset = clearFilters => {
     clearFilters();
@@ -187,11 +187,14 @@ function TableQuality() {
     return (
       <>
       <div>
-        <h2>Table Data Quality</h2>
-        <hr/>
         <div className="container">
           <Button className="clear" type="primary" onClick={clearAll}>Clear all adjustment</Button>
-          <Table  bordered columns={columns} dataSource={dataQualityDummy} onChange={onChange} rowKey="_id"/>
+          <Table  
+          bordered columns={columns}
+          dataSource={dataQualityDummy}
+          title={() => <h1 align='center'>Table Quality</h1>}
+          onChange={onChange} 
+          rowKey="_id"/>
         </div>
         <Modal title="Chart quality" style={{top:20}} visible={isModalViewed} onOk={handleOk} onCancel={handleCancel} width={1200}>
           <Xychart/>

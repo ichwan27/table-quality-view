@@ -6,6 +6,7 @@ import am4themes_animated from "@amcharts/amcharts4/themes/animated";
 import chartData from '../chartData.json';
 
 am4core.useTheme(am4themes_animated);
+
 function last30Days(){
     const date = new Date();
     const year = date.getFullYear();
@@ -14,6 +15,7 @@ function last30Days(){
     const day = date.getDate();
     return year+"-"+lastMonth+"-"+day;
 }
+
 function XyChart (props) {
     const chart = useRef(null);
 useLayoutEffect(() => {

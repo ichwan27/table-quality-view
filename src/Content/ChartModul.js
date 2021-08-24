@@ -1,80 +1,62 @@
+import React, {useEffect, useState } from 'react';
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-import React, { Component } from 'react';
+import * as am4plugins_sliceGrouper from "@amcharts/amcharts4/plugins/sliceGrouper";
+import data from '../userModuleLogs.json';
 
-am4core.useTheme(am4themes_animated);
-
-class ChartModul extends Component {
-  componentDidMount() {
-    let chart = am4core.create("chartdiv", am4charts.PieChart);
-
-    chart.paddingRight = this.props.paddingRight;
-
-    chart.data = [{
-      "country": "Lithuania",
-      "litres": 501.9
-    }, {
-      "country": "Czech Republic",
-      "litres": 301.9
-    }, {
-      "country": "Ireland",
-      "litres": 201.1
-    }, {
-      "country": "Germany",
-      "litres": 165.8
-    }, {
-      "country": "Australia",
-      "litres": 139.9
-    }, {
-      "country": "Austria",
-      "litres": 128.3
-    }, {
-      "country": "UK",
-      "litres": 99
-    }, {
-      "country": "Belgium",
-      "litres": 60
-    }, {
-      "country": "The Netherlands",
-      "litres": 50
-    }];
-
-    var pieSeries = chart.series.push(new am4charts.PieSeries());
-    pieSeries.dataFields.value = "litres";
-    pieSeries.dataFields.category = "country";
-    pieSeries.slices.template.draggable = true;
-    pieSeries.slices.template.cornerRadius = 3;
-    pieSeries.slices.template.innerCornerRadius = 9;
-    pieSeries.slices.template.marginRight=10;
-
-    chart.radius = am4core.percent(80);
-    chart.innerRadius = am4core.percent(50);
-
-    chart.legend = new am4charts.Legend();
-
-    this.chart = chart;
-  }
-
-  componentDidUpdate(oldProps) {
-    if (oldProps.paddingRight !== this.props.paddingRight) {
-      this.chart.paddingRight = this.props.paddingRight;
-    }
-  }
-  componentWillUnmount() {
-    if (this.chart) {
-      this.chart.dispose();
-    }
-  }
-  render() {
-    return (
-      <div>
-      <div id="chartdiv" style={{ width: "100%", height: "450px" }}></div>
-      <div id="legend"></div>
-      </div>
-    );
-  }
+function getModulValue(modulName, data){
+    return data.filter(item => item.module_name === modulName).length;
 }
 
-export default ChartModul;
+function countFreq(moduleName, chartData) {
+    const output = [];
+    moduleName.map((module_name) =>(
+        output.push({'module_name' : module_name, 'usage' : getModulValue(module_name, chartData)})
+    ));
+    return output;
+}
 
+function ChartModul () {
+  const [chartData] = useState(data.data.user_module_logs);
+  const [AllModulesName] = useState([...new Set(chartData.map(item => item.module_name))]);
+  am4core.options.autoDispose = true;
+  am4core.useTheme(am4themes_animated);
+  useEffect(() => {
+    let chart = am4core.create("piechart", am4charts.PieChart);
+    chart.data = countFreq(AllModulesName,chartData);
+
+    let pieSeries = chart.series.push(new am4charts.PieSeries());
+    pieSeries.dataFields.value = "usage";
+    pieSeries.dataFields.category = "module_name";
+    pieSeries.slices.template.stroke = am4core.color("#fff");
+    pieSeries.slices.template.strokeWidth = 2;
+    pieSeries.slices.template.strokeOpacity = 1;
+
+    pieSeries.hiddenState.properties.opacity = 1;
+    pieSeries.hiddenState.properties.endAngle = -90;
+    pieSeries.hiddenState.properties.startAngle = -90;
+
+    chart.radius = am4core.percent(100);
+    chart.legend = new am4charts.Legend();
+    chart.legend.paddingTop = 50;
+    // chart.legend.scrollable=true;
+
+    let grouper = pieSeries.plugins.push(new am4plugins_sliceGrouper.SliceGrouper());
+    grouper.threshold = 2.5;
+    grouper.groupName = "Other";
+    grouper.clickBehavior = "zoom";
+  });
+
+
+  return (
+    <>
+        <h1>Chart Modul used</h1>
+        <hr/>
+        <div id="piechart" style={{ paddingTop: "30px", width: "100%", height: "450px" }}></div>
+    </>
+  );
+}
+
+
+export default ChartModul
